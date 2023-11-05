@@ -220,10 +220,21 @@ class Controller {
     }
 
     initQualityButton() {
-        if (this.player.options.video.quality) {
+        if (this.player.options.video.quality || this.player.useHlsQuality) {
             this.player.template.qualityList.addEventListener('click', (e) => {
                 if (e.target.classList.contains('dplayer-quality-item')) {
                     this.player.switchQuality(e.target.dataset.index);
+                }
+            });
+        }
+    }
+
+    initAudioButton() {
+        if (this.player.useHlsAudio) {
+            this.player.template.audioList.addEventListener('click', (e) => {
+                console.log('initAudioButton');
+                if (e.target.classList.contains('dplayer-audio-item')) {
+                    this.player.switchAudio(e.target.dataset.index);
                 }
             });
         }

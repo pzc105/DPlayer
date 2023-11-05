@@ -109,6 +109,14 @@
                 </div>
             </div>
         </div>
+        {{ else if options.video.type === "hls" }}
+        <div class="dplayer-quality">
+            <button class="dplayer-icon dplayer-quality-icon">"auto"</button>
+            <div class="dplayer-quality-mask">
+                <div class="dplayer-quality-list">
+                </div>
+            </div>
+        </div>
         {{ /if }}
         {{ if options.screenshot }}
         <div class="dplayer-icon dplayer-camera-icon" data-balloon="{{ tran('screenshot') }}" data-balloon-pos="up">

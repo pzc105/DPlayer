@@ -390,6 +390,7 @@ class DPlayer {
                             const options = this.options.pluginOptions.hls;
                             const hls = new window.Hls(options);
                             this.plugins.hls = hls;
+                            this.initHls();
                             hls.loadSource(video.src);
                             hls.attachMedia(video);
                             this.events.on('destroy', () => {
@@ -569,8 +570,80 @@ class DPlayer {
         }
     }
 
+    initHls() {
+        let hls = this.plugins.hls;
+        let player = this;
+        hls.on(window.Hls.Events.MANIFEST_PARSED, function (event, data) {
+            hls.startLoad(0);
+            let temp = '<div class="dplayer-quality-item" data-index="{{ $index }}">{{ $value.name }}</div>';
+            if (hls.levels.length > 1) {
+                player.useHlsQuality = true;
+                let autoHtml = temp.replace('{{ $index }}', '-1').replace('{{ $value.name }}', 'auto');
+                player.template.qualityList.insertAdjacentHTML('beforeend', autoHtml);
+
+                hls.startLevel = -1;
+                player.template.qualityButton.innerHTML = 'auto';
+            }
+            hls.levels.map((l, i) => {
+                let html = temp.replace('{{ $index }}', String(i)).replace('{{ $value.name }}', String(l.height));
+                player.template.qualityList.insertAdjacentHTML('beforeend', html);
+            });
+
+            player.controller.initQualityButton();
+        });
+
+        hls.on(window.Hls.Events.AUDIO_TRACKS_UPDATED, function (event, data) {
+            if (hls.audioTracks.length < 0) {
+                return;
+            }
+            let audioContainer = player.container.querySelector('.dplayer-audio');
+            if (audioContainer) {
+                return;
+            }
+            player.useHlsAudio = true;
+            hls.audioTrack = 0;
+            let audioHtml = '<div class="dplayer-audio"> \
+                                <button class="dplayer-icon dplayer-audio-icon">{{ auto name }}</button> \
+                                <div class="dplayer-audio-mask"> \
+                                    <div class="dplayer-audio-list"> \
+                                    </div>\
+                                </div>\
+                            </div>'.replace('{{ auto name }}', hls.audioTracks[0].lang);
+            player.template.qualityConatiner.insertAdjacentHTML('afterend', audioHtml);
+            player.template.audioList = player.container.querySelector('.dplayer-audio-list');
+            let temp = '<div class="dplayer-audio-item" data-index="{{ $index }}">{{ $value.name }}</div>';
+            hls.audioTracks.map((a, i) => {
+                console.log('audioTracks', a, i);
+                let html = temp.replace('{{ $index }}', String(i)).replace('{{ $value.name }}', String(a.lang));
+                player.template.audioList.insertAdjacentHTML('beforeend', html);
+            });
+            player.template.audioButton = player.container.querySelector('.dplayer-audio-icon');
+            player.controller.initAudioButton();
+        });
+    }
+
+    switchAudio(index) {
+        index = typeof index === 'string' ? parseInt(index) : index;
+        if (this.useHlsAudio) {
+            this.plugins.hls.audioTrack = index;
+            this.template.audioButton.innerHTML = String(this.plugins.hls.audioTracks[index].lang);
+            return;
+        }
+    }
+
     switchQuality(index) {
         index = typeof index === 'string' ? parseInt(index) : index;
+
+        if (this.useHlsQuality) {
+            this.plugins.hls.currentLevel = index;
+            if (index >= 0) {
+                this.template.qualityButton.innerHTML = String(this.plugins.hls.levels[index].height);
+            } else {
+                this.template.qualityButton.innerHTML = 'auto';
+            }
+            return;
+        }
+
         if (this.qualityIndex === index || this.switchingQuality) {
             return;
         } else {
