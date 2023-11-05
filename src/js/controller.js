@@ -232,7 +232,6 @@ class Controller {
     initAudioButton() {
         if (this.player.useHlsAudio) {
             this.player.template.audioList.addEventListener('click', (e) => {
-                console.log('initAudioButton');
                 if (e.target.classList.contains('dplayer-audio-item')) {
                     this.player.switchAudio(e.target.dataset.index);
                 }

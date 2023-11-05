@@ -31,13 +31,12 @@ class Danmaku {
         const endpoints = (this.options.api.addition || []).slice(0);
         endpoints.push(apiurl);
         this.events && this.events.trigger('danmaku_load_start', endpoints);
-
         this._readAllEndpoints(endpoints, (results) => {
             this.dan = [].concat.apply([], results).sort((a, b) => a.time - b.time);
             window.requestAnimationFrame(() => {
                 this.frame();
             });
-
+            console.log('this.dan', this.dan);
             this.options.callback();
 
             this.events && this.events.trigger('danmaku_load_end');
@@ -78,6 +77,7 @@ class Danmaku {
                         callback(results);
                     }
                 },
+                reqConfig: { withCredentials: this.options.api.withCredentials },
             });
         }
     }
@@ -97,8 +97,10 @@ class Danmaku {
             data: danmakuData,
             success: callback,
             error: (msg) => {
+                console.log('send', msg);
                 this.options.error(msg || this.options.tran('danmaku-failed'));
             },
+            reqConfig: { withCredentials: this.options.api.withCredentials },
         });
 
         this.dan.splice(this.danIndex, 0, danmakuData);
@@ -156,6 +158,10 @@ class Danmaku {
             const danWidth = this.container.offsetWidth;
             const danHeight = this.container.offsetHeight;
             const itemY = parseInt(danHeight / itemHeight);
+
+            if (dan.length > 0) {
+                console.log('container', itemHeight, danWidth, danHeight, itemY);
+            }
 
             const danItemRight = (ele) => {
                 const eleWidth = ele.offsetWidth || parseInt(ele.style.width);
@@ -258,8 +264,12 @@ class Danmaku {
                     item.style.animationDuration = this._danAnimation(dan[i].type);
 
                     // insert
+                    console.log('after dan', item.style);
                     docFragment.appendChild(item);
                 }
+            }
+            if (dan.length > 0) {
+                console.log('after dan', docFragment);
             }
 
             this.container.appendChild(docFragment);

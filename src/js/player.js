@@ -147,6 +147,7 @@ class DPlayer {
                     addition: this.options.danmaku.addition,
                     user: this.options.danmaku.user,
                     speedRate: this.options.danmaku.speedRate,
+                    withCredentials: this.options.danmaku.withCredentials,
                 },
                 events: this.events,
                 tran: (msg) => this.tran(msg),
@@ -613,7 +614,6 @@ class DPlayer {
             player.template.audioList = player.container.querySelector('.dplayer-audio-list');
             let temp = '<div class="dplayer-audio-item" data-index="{{ $index }}">{{ $value.name }}</div>';
             hls.audioTracks.map((a, i) => {
-                console.log('audioTracks', a, i);
                 let html = temp.replace('{{ $index }}', String(i)).replace('{{ $value.name }}', String(a.lang));
                 player.template.audioList.insertAdjacentHTML('beforeend', html);
             });
