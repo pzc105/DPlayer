@@ -775,7 +775,9 @@ class DPlayer {
     }
 
     onPushDanmaku(danList) {
-        this.danmaku.onPush(danList);
+        if (this.danmaku) {
+            this.danmaku.onPush(danList);
+        }
     }
 
     destroy() {
