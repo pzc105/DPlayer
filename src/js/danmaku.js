@@ -36,7 +36,6 @@ class Danmaku {
             window.requestAnimationFrame(() => {
                 this.frame();
             });
-            console.log('this.dan', this.dan);
             this.options.callback();
 
             this.events && this.events.trigger('danmaku_load_end');

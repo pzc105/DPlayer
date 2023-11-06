@@ -111,7 +111,7 @@
         </div>
         {{ else if options.video.type === "hls" }}
         <div class="dplayer-quality">
-            <button class="dplayer-icon dplayer-quality-icon">"auto"</button>
+            <button class="dplayer-icon dplayer-quality-icon">auto</button>
             <div class="dplayer-quality-mask">
                 <div class="dplayer-quality-list">
                 </div>

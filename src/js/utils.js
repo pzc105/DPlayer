@@ -95,6 +95,14 @@ const utils = {
 
     isSafari: /safari/i.test(window.navigator.userAgent),
 
+    isIE() {
+        return /*@cc_on!@*/ false || !!document.documentMode;
+    },
+
+    isEdge() {
+        return (!this.isIE() && !!window.StyleMedia) || navigator.userAgent.indexOf('Edg') != -1;
+    },
+
     storage: {
         set: (key, value) => {
             localStorage.setItem(key, value);

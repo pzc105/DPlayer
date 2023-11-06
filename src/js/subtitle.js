@@ -12,10 +12,13 @@ class Subtitle {
         this.container.style.fontSize = this.options.fontSize;
         this.container.style.bottom = this.options.bottom;
         this.container.style.color = this.options.color;
+        this.onTrackChange();
+    }
 
-        if (this.video.textTracks && this.video.textTracks[0]) {
-            const track = this.video.textTracks[0];
-
+    onTrackChange() {
+        if (this.video.textTracks && this.video.textTracks[this.video.textTracks.length - 1]) {
+            const track = this.video.textTracks[this.video.textTracks.length - 1];
+            track.mode = 'hidden';
             track.oncuechange = () => {
                 const cue = track.activeCues[track.activeCues.length - 1];
                 this.container.innerHTML = '';

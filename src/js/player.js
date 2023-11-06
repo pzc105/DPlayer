@@ -70,7 +70,7 @@ class DPlayer {
                     lang: 'off',
                 };
                 this.options.subtitle.url.push(offSubtitle);
-                if (this.options.subtitle.defaultSubtitle) {
+                if (this.options.subtitle.defaultSubtitle !== undefined) {
                     if (typeof this.options.subtitle.defaultSubtitle === 'string') {
                         // defaultSubtitle is string, match in lang then name.
                         this.options.subtitle.index = this.options.subtitle.url.findIndex((sub) =>
@@ -88,8 +88,9 @@ class DPlayer {
                         this.options.subtitle.index = this.options.subtitle.defaultSubtitle;
                     }
                 }
+
                 // defaultSubtitle not match or not exist or index bound(when defaultSubtitle is int), try browser language.
-                if (this.options.subtitle.index === -1 || !this.options.subtitle.index || this.options.subtitle.index > this.options.subtitle.url.length - 1) {
+                if (this.options.subtitle.index === -1 || this.options.subtitle.index === undefined || this.options.subtitle.index > this.options.subtitle.url.length - 1) {
                     this.options.subtitle.index = this.options.subtitle.url.findIndex((sub) => sub.lang === this.options.lang);
                 }
                 // browser language not match, default off title
@@ -594,7 +595,7 @@ class DPlayer {
         });
 
         hls.on(window.Hls.Events.AUDIO_TRACKS_UPDATED, function (event, data) {
-            if (hls.audioTracks.length < 0) {
+            if (hls.audioTracks.length <= 0) {
                 return;
             }
             let audioContainer = player.container.querySelector('.dplayer-audio');
@@ -603,18 +604,26 @@ class DPlayer {
             }
             player.useHlsAudio = true;
             hls.audioTrack = 0;
+            let lang = hls.audioTracks[0].lang;
+            if (!lang) {
+                lang = 'audio';
+            }
             let audioHtml = '<div class="dplayer-audio"> \
                                 <button class="dplayer-icon dplayer-audio-icon">{{ auto name }}</button> \
                                 <div class="dplayer-audio-mask"> \
                                     <div class="dplayer-audio-list"> \
                                     </div>\
                                 </div>\
-                            </div>'.replace('{{ auto name }}', hls.audioTracks[0].lang);
+                            </div>'.replace('{{ auto name }}', lang);
             player.template.qualityConatiner.insertAdjacentHTML('afterend', audioHtml);
             player.template.audioList = player.container.querySelector('.dplayer-audio-list');
             let temp = '<div class="dplayer-audio-item" data-index="{{ $index }}">{{ $value.name }}</div>';
             hls.audioTracks.map((a, i) => {
-                let html = temp.replace('{{ $index }}', String(i)).replace('{{ $value.name }}', String(a.lang));
+                let lang = a.lang;
+                if (!lang) {
+                    lang = 'audio';
+                }
+                let html = temp.replace('{{ $index }}', String(i)).replace('{{ $value.name }}', lang);
                 player.template.audioList.insertAdjacentHTML('beforeend', html);
             });
             player.template.audioButton = player.container.querySelector('.dplayer-audio-icon');

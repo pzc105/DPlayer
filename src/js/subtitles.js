@@ -1,3 +1,5 @@
+import utils from './utils';
+
 class Subtitles {
     constructor(player) {
         this.player = player;
@@ -13,6 +15,25 @@ class Subtitles {
         const lastItemIndex = this.player.template.subtitlesItem.length - 1;
         for (let i = 0; i < lastItemIndex; i++) {
             this.player.template.subtitlesItem[i].addEventListener('click', () => {
+                if (utils.isEdge()) {
+                    this.hide();
+                    this.player.template.subtitle.innerHTML = `<p></p>`;
+                    if (this.player.template.subtrack) {
+                        this.player.video.removeChild(this.player.template.subtrack);
+                    }
+                    let url = this.player.template.subtitlesItem[i].dataset.subtitle;
+
+                    let trackHtml = '<track class="dplayer-subtrack" label="{{ label }}" kind="metadata" default src="{{ url }}"></track>'.replace('{{ url }}', url).replace('{{ label }}', this.player.options.subtitle.index);
+                    this.player.template.video.insertAdjacentHTML('beforeend', trackHtml);
+                    this.player.template.subtrack = this.player.container.querySelector('.dplayer-subtrack');
+                    this.player.options.subtitle.index = i;
+                    this.player.subtitle.onTrackChange();
+                    if (this.player.template.subtitle.classList.contains('dplayer-subtitle-hide')) {
+                        this.subContainerShow();
+                    }
+                    return;
+                }
+
                 this.hide();
                 if (this.player.options.subtitle.index !== i) {
                     // clear subtitle show for new subtitle don't have now duration time. If don't, will display last subtitle.
