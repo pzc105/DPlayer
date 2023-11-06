@@ -96,7 +96,6 @@ class Danmaku {
             data: danmakuData,
             success: callback,
             error: (msg) => {
-                console.log('send', msg);
                 this.options.error(msg || this.options.tran('danmaku-failed'));
             },
             reqConfig: { withCredentials: this.options.api.withCredentials },
@@ -113,6 +112,23 @@ class Danmaku {
         this.draw(danmaku);
 
         this.events && this.events.trigger('danmaku_send', danmakuData);
+    }
+
+    onPush(danList) {
+        if (danList === undefined || danList.length == 0) {
+            return;
+        }
+        const t = this.dan[this.danIndex - 1];
+        if (t === undefined) {
+            this.dan.push(...danList);
+        } else {
+            for (const dan of danList) {
+                if (t.time < dan.time) {
+                    this.dan.push(dan);
+                }
+            }
+        }
+        this.dan = [].concat.apply([], this.dan).sort((a, b) => a.time - b.time);
     }
 
     frame() {
@@ -157,10 +173,6 @@ class Danmaku {
             const danWidth = this.container.offsetWidth;
             const danHeight = this.container.offsetHeight;
             const itemY = parseInt(danHeight / itemHeight);
-
-            if (dan.length > 0) {
-                console.log('container', itemHeight, danWidth, danHeight, itemY);
-            }
 
             const danItemRight = (ele) => {
                 const eleWidth = ele.offsetWidth || parseInt(ele.style.width);
@@ -263,12 +275,8 @@ class Danmaku {
                     item.style.animationDuration = this._danAnimation(dan[i].type);
 
                     // insert
-                    console.log('after dan', item.style);
                     docFragment.appendChild(item);
                 }
-            }
-            if (dan.length > 0) {
-                console.log('after dan', docFragment);
             }
 
             this.container.appendChild(docFragment);

@@ -3,6 +3,8 @@
     class="dplayer-video {{ if current }}dplayer-video-current{{ /if }}"
     webkit-playsinline
     {{ if airplay }} x-webkit-airplay="allow" {{ /if }}
+    autoplay
+    muted
     playsinline
     {{ if pic }}poster="{{ pic }}"{{ /if }}
     {{ if screenshot || enableSubtitle }}crossorigin="use-credentials"{{ /if }}

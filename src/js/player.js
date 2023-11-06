@@ -229,7 +229,7 @@ class DPlayer {
         if (!fromNative) {
             const playedPromise = Promise.resolve(this.video.play());
             playedPromise
-                .catch(() => {
+                .catch((e) => {
                     this.pause();
                 })
                 .then(() => {});
@@ -772,6 +772,10 @@ class DPlayer {
 
     speed(rate) {
         this.video.playbackRate = rate;
+    }
+
+    onPushDanmaku(danList) {
+        this.danmaku.onPush(danList);
     }
 
     destroy() {
