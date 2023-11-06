@@ -9,6 +9,9 @@ class Subtitle {
     }
 
     init() {
+        this.container.style.padding = '10px';
+        this.container.style.borderRadius = '5px';
+        this.container.style.fontFamily = 'Arial, sans-serif';
         this.container.style.fontSize = this.options.fontSize;
         this.container.style.bottom = this.options.bottom;
         this.container.style.color = this.options.color;
@@ -27,7 +30,7 @@ class Subtitle {
                     template.appendChild(cue.getCueAsHTML());
                     const trackHtml = template.innerHTML
                         .split(/\r?\n/)
-                        .map((item) => `<p>${item}</p>`)
+                        .map((item) => `<p style="margin: 0; text-shadow: 5px 5px 10px rgba(0, 0, 0, 1)">${item}</p>`)
                         .join('');
                     this.container.innerHTML = trackHtml;
                 }
