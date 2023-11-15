@@ -16,6 +16,7 @@ import airplay from '../assets/airplay.svg';
 import subtitle from '../assets/subtitle.svg';
 import loading from '../assets/loading.svg';
 import chromecast from '../assets/chromecast.svg';
+import next from '../assets/next.svg';
 
 const Icons = {
     play: play,
@@ -36,6 +37,7 @@ const Icons = {
     loading: loading,
     airplay: airplay,
     chromecast: chromecast,
+    next: next,
 };
 
 export default Icons;

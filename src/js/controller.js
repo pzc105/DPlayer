@@ -44,6 +44,12 @@ class Controller {
             this.player.toggle();
         });
 
+        this.player.template.nextButton.addEventListener('click', () => {
+            if (this.player.options.nextButton.show && this.player.options.nextButton.callback) {
+                this.player.options.nextButton.callback();
+            }
+        });
+
         this.player.template.mobilePlayButton.addEventListener('click', () => {
             this.player.toggle();
         });

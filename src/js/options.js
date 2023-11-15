@@ -23,6 +23,10 @@ export default (options) => {
         mutex: true,
         pluginOptions: { hls: {}, flv: {}, dash: {}, webtorrent: {} },
         preventClickToggle: false,
+        nextButton: {
+            show: false,
+            callback: undefined,
+        },
     };
     for (const defaultKey in defaultOption) {
         if (defaultOption.hasOwnProperty(defaultKey) && !options.hasOwnProperty(defaultKey)) {

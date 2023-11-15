@@ -117,6 +117,10 @@ class DPlayer {
 
         this.controller = new Controller(this);
 
+        if (!this.options.nextButton.show) {
+            this.template.nextButton.classList.add('dplayer-next-icon-hide');
+        }
+
         if (this.options.danmaku) {
             this.danmaku = new Danmaku({
                 player: this,
