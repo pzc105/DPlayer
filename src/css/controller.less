@@ -331,6 +331,9 @@
                 .dplayer-icon-content {
                     opacity: 1;
                 }
+                &.dplayer-setting-icon {
+                    transform: rotate(90deg);
+                }
             }
             &.dplayer-next-icon-hide {
                 display: none;
@@ -352,6 +355,7 @@
             }
             &.dplayer-setting-icon {
                 padding-top: 8.5px;
+                transition: transform 0.3s ease;
             }
             &.dplayer-volume-icon {
                 width: 43px;
