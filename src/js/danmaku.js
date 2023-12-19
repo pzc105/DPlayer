@@ -123,9 +123,10 @@ class Danmaku {
             this.dan.push(...danList);
         } else {
             for (const dan of danList) {
-                if (t.time < dan.time) {
-                    this.dan.push(dan);
+                if (t.time >= dan.time) {
+                    this.danIndex++;
                 }
+                this.dan.push(dan);
             }
         }
         this.dan = [].concat.apply([], this.dan).sort((a, b) => a.time - b.time);

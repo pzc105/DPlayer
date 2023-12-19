@@ -608,10 +608,7 @@ class DPlayer {
             }
             player.useHlsAudio = true;
             hls.audioTrack = 0;
-            let lang = hls.audioTracks[0].lang;
-            if (!lang) {
-                lang = 'audio';
-            }
+            let lang = utils.formatAudioLangName(hls.audioTracks[0].lang);
             let audioHtml = '<div class="dplayer-audio"> \
                                 <button class="dplayer-icon dplayer-audio-icon">{{ auto name }}</button> \
                                 <div class="dplayer-audio-mask"> \
@@ -623,7 +620,7 @@ class DPlayer {
             player.template.audioList = player.container.querySelector('.dplayer-audio-list');
             let temp = '<div class="dplayer-audio-item" data-index="{{ $index }}">{{ $value.name }}</div>';
             hls.audioTracks.map((a, i) => {
-                let lang = a.lang;
+                let lang = utils.formatAudioLangName(a.lang);
                 if (!lang) {
                     lang = 'audio';
                 }
@@ -639,7 +636,7 @@ class DPlayer {
         index = typeof index === 'string' ? parseInt(index) : index;
         if (this.useHlsAudio) {
             this.plugins.hls.audioTrack = index;
-            this.template.audioButton.innerHTML = String(this.plugins.hls.audioTracks[index].lang);
+            this.template.audioButton.innerHTML = String(utils.formatAudioLangName(this.plugins.hls.audioTracks[index].lang));
             return;
         }
     }

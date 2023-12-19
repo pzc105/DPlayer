@@ -141,6 +141,13 @@ const utils = {
                 return 'right';
         }
     },
+
+    formatAudioLangName: (lang) => {
+        if (lang === undefined || lang === null || lang === 'und') {
+            return 'audio';
+        }
+        return lang;
+    },
 };
 
 export default utils;
