@@ -114,34 +114,37 @@ class Danmaku {
         this.events && this.events.trigger('danmaku_send', danmakuData);
     }
 
+    insertDan(newDan) {
+        if (newDan.id in this.danMap) {
+            return;
+        }
+        this.danMap[newDan.id] = newDan;
+        if (this.dan.length === 0) {
+            this.dan.push(newDan);
+            return;
+        }
+        for (let i = 0; i < this.dan.length; i++) {
+            if (this.dan[i].d_time >= newDan.d_time) {
+                this.dan.splice(i, 0, newDan);
+                if (i < this.danIndex) {
+                    this.danIndex++;
+                }
+                return;
+            }
+            if (i === this.dan.length - 1) {
+                this.dan.push(newDan);
+                return;
+            }
+        }
+    }
+
     onPush(danList) {
         if (danList === undefined || danList.length == 0) {
             return;
         }
-        let nowIndex = this.danIndex - 1;
-        let item = this.dan[nowIndex];
-        let danList2 = [];
         for (const dan of danList) {
-            if (dan.id in this.danMap) {
-                continue;
-            }
-            danList2.push(dan);
-            this.danMap[dan.id] = dan;
+            this.insertDan(dan);
         }
-        if (!item) {
-            this.dan.push(...danList2);
-            this.dan = [].concat.apply([], this.dan).sort((a, b) => a.d_time - b.d_time);
-        } else {
-            for (const dan of danList2) {
-                if (dan.d_time < item.d_time) {
-                    this.dan.splice(nowIndex, 0, dan);
-                    this.danIndex++;
-                } else {
-                    this.dan.splice(nowIndex + 1, 0, dan);
-                }
-            }
-        }
-        this.frame();
     }
 
     frame() {
