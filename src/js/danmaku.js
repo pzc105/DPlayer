@@ -12,6 +12,7 @@ class Danmaku {
         };
         this.danIndex = 0;
         this.dan = [];
+        this.danMap = {};
         this.showing = true;
         this._opacity = this.options.opacity;
         this.events = this.options.events;
@@ -32,7 +33,11 @@ class Danmaku {
         endpoints.push(apiurl);
         this.events && this.events.trigger('danmaku_load_start', endpoints);
         this._readAllEndpoints(endpoints, (results) => {
-            this.dan = [].concat.apply([], results).sort((a, b) => a.time - b.time);
+            for (const dan of results) {
+                this.danMap[dan.id] = dan;
+            }
+            this.dan = Object.values(this.danMap);
+            this.dan = [].concat.apply([], this.dan).sort((a, b) => a.d_time - b.d_time);
             window.requestAnimationFrame(() => {
                 this.frame();
             });
@@ -82,11 +87,15 @@ class Danmaku {
     }
 
     send(dan, callback) {
+        let timestamp = Date.now();
+        let id = String(this.options.api.userId) + '_' + String(timestamp);
         const danmakuData = {
             token: this.options.api.token,
-            id: this.options.api.id,
-            author: this.options.api.user,
-            time: this.options.time(),
+            id: id,
+            user_id: this.options.api.userId,
+            user_name: this.options.api.userName,
+            s_time: timestamp,
+            d_time: this.options.time(),
             text: dan.text,
             color: dan.color,
             type: dan.type,
@@ -100,16 +109,7 @@ class Danmaku {
             },
             reqConfig: { withCredentials: this.options.api.withCredentials },
         });
-
-        this.dan.splice(this.danIndex, 0, danmakuData);
-        this.danIndex++;
-        const danmaku = {
-            text: this.htmlEncode(danmakuData.text),
-            color: danmakuData.color,
-            type: danmakuData.type,
-            border: `2px solid ${this.options.borderColor}`,
-        };
-        this.draw(danmaku);
+        this.onPush([danmakuData]);
 
         this.events && this.events.trigger('danmaku_send', danmakuData);
     }
@@ -118,25 +118,40 @@ class Danmaku {
         if (danList === undefined || danList.length == 0) {
             return;
         }
-        const t = this.dan[this.danIndex - 1];
-        if (t === undefined) {
-            this.dan.push(...danList);
+        let nowIndex = this.danIndex - 1;
+        let item = this.dan[nowIndex];
+        let danList2 = [];
+        for (const dan of danList) {
+            if (dan.id in this.danMap) {
+                continue;
+            }
+            danList2.push(dan);
+            this.danMap[dan.id] = dan;
+        }
+        if (!item) {
+            this.dan.push(...danList2);
+            this.dan = [].concat.apply([], this.dan).sort((a, b) => a.d_time - b.d_time);
         } else {
-            for (const dan of danList) {
-                if (t.time >= dan.time) {
+            for (const dan of danList2) {
+                if (dan.d_time < item.d_time) {
+                    this.dan.splice(nowIndex, 0, dan);
                     this.danIndex++;
+                } else {
+                    this.dan.splice(nowIndex + 1, 0, dan);
                 }
-                this.dan.push(dan);
             }
         }
-        this.dan = [].concat.apply([], this.dan).sort((a, b) => a.time - b.time);
+        this.frame();
     }
 
     frame() {
         if (this.dan.length && !this.paused && this.showing) {
             let item = this.dan[this.danIndex];
             const dan = [];
-            while (item && this.options.time() > parseFloat(item.time)) {
+            while (item && this.options.time() > parseFloat(item.d_time)) {
+                if (String(item.user_id) === String(this.options.api.userId)) {
+                    item.border = `2px solid ${this.options.borderColor}`;
+                }
                 dan.push(item);
                 item = this.dan[++this.danIndex];
             }
@@ -306,7 +321,7 @@ class Danmaku {
     seek() {
         this.clear();
         for (let i = 0; i < this.dan.length; i++) {
-            if (this.dan[i].time >= this.options.time()) {
+            if (this.dan[i].d_time >= this.options.time()) {
                 this.danIndex = i;
                 break;
             }

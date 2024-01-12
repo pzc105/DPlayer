@@ -27,16 +27,7 @@ export default {
                     options.error && options.error(data && data.msg);
                     return;
                 }
-                options.success &&
-                    options.success(
-                        data.data.map((item) => ({
-                            time: item[0],
-                            type: item[1],
-                            color: item[2],
-                            author: item[3],
-                            text: item[4],
-                        }))
-                    );
+                options.success && options.success(data.data);
             })
             .catch((e) => {
                 console.error(e);
